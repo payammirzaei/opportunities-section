@@ -104,7 +104,7 @@ const OpportunitiesSection = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-block bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-full px-4 py-2 text-sm text-gray-300 mb-6"
+            className="inline-block bg-gray-800/70 border border-gray-700/60 rounded-full px-4 py-2 text-sm text-gray-300 mb-6"
           >
             💎 New opportunities
           </motion.div>
@@ -161,11 +161,13 @@ const OpportunitiesSection = () => {
                     <h3 className="text-xl font-semibold">{tab.label}</h3>
                   </div>
                   <div className="space-y-3">
-                    <AnimatePresence mode="wait">
-                      {(tab.id === activeTab ? displayData : getCurrentData()).slice(0, 5).map((item, index) => (
-                        <MarketItem key={item.id} item={item} index={index} />
-                      ))}
-                    </AnimatePresence>
+                    <div className="space-y-3">
+                      <AnimatePresence>
+                        {displayData.map((item, index) => (
+                          <MarketItem key={item.id} item={item} index={index} />
+                        ))}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
               ))}
