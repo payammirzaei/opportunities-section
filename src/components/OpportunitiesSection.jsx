@@ -51,16 +51,6 @@ const OpportunitiesSection = () => {
           };
         }
         
-        // Occasionally reorder based on criteria
-        if (Math.random() < 0.4) {
-          newData.sort((a, b) => {
-            if (activeTab === 'hot') return b.price - a.price;
-            if (activeTab === 'new') return Math.random() - 0.5;
-            if (activeTab === 'gainers') return b.change - a.change;
-            return 0;
-          });
-        }
-        
         return newData;
       });
     }, Math.random() * 2000 + 3000); // 3-5 seconds
@@ -74,18 +64,25 @@ const OpportunitiesSection = () => {
     { id: 'gainers', label: 'Top Gainers', icon: '📈' }
   ];
 
-  const getCurrentData = () => {
-    switch (activeTab) {
+  const getCurrentData = (tabId) => {
+    switch (tabId) {
       case 'new':
         return newCoinsData;
       case 'gainers':
         return [...marketData].sort((a, b) => b.change - a.change);
+      case 'hot':
       default:
-        return marketData;
+        return [...marketData].sort((a, b) => b.price - a.price);
     }
   };
 
-  const displayData = getCurrentData().slice(0, 5);
+  // Get data for each tab (for desktop view)
+  const getTabData = (tabId) => {
+    return getCurrentData(tabId).slice(0, 5);
+  };
+
+  // Get data for mobile view (current active tab)
+  const displayData = getCurrentData(activeTab).slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
@@ -100,27 +97,30 @@ const OpportunitiesSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-block bg-gray-800/70 border border-gray-700/60 rounded-full px-4 py-2 text-sm text-gray-300 mb-6"
-          >
-            💎 New opportunities
-          </motion.div>
-          
-          <motion.h1
-            initial={{ opacity: 0, filter: 'blur(20px)', y: 20 }}
-            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
-          >
-            <span className="text-blue-500">TRADE</span> YOUR FAVOURITE{' '}
-            <br className="hidden md:block" />
-            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-              MARKETS
-            </span>
-          </motion.h1>
+
+          <div className="relative inline-block">
+            {/* GLOW */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.5, scale: 1.4 }}
+              transition={{ duration: 1.5, ease: 'easeOut' }}
+              className="absolute inset-0 mx-auto bg-purple-500/30 blur-3xl rounded-full z-0"
+            />
+
+            {/* TITLE ON TOP */}
+            <motion.h1
+              initial={{ opacity: 0, filter: 'blur(20px)', y: 20 }}
+              animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="relative z-10 text-4xl md:text-6xl font-bold mb-6 leading-tight"
+            >
+              <span className="text-blue-500">TRADE</span> YOUR FAVOURITE{' '}
+              <br className="hidden md:block" />
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                MARKETS
+              </span>
+            </motion.h1>
+          </div>
           
           <motion.p
             initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
@@ -163,7 +163,7 @@ const OpportunitiesSection = () => {
                   <div className="space-y-3">
                     <div className="space-y-3">
                       <AnimatePresence>
-                        {displayData.map((item, index) => (
+                        {getTabData(tab.id).map((item, index) => (
                           <MarketItem key={item.id} item={item} index={index} />
                         ))}
                       </AnimatePresence>
